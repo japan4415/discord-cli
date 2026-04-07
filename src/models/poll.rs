@@ -3,6 +3,7 @@ use tabled::Tabled;
 
 use super::common::display_option;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct Poll {
     #[tabled(skip)]
@@ -17,6 +18,7 @@ pub struct Poll {
     pub results: Option<serde_json::Value>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct PollAnswer {
     #[tabled(display_with = "display_option")]

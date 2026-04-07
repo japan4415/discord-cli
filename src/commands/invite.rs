@@ -9,16 +9,19 @@ pub enum InviteCommand {
     /// Get an invite by code
     Get {
         /// Invite code
+        #[arg(long)]
         code: String,
     },
     /// List guild invites
     List {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
     },
     /// Create a channel invite
     Create {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
         /// Max age in seconds (0 for never)
         #[arg(long, default_value = "86400")]
@@ -33,6 +36,7 @@ pub enum InviteCommand {
     /// Delete an invite
     Delete {
         /// Invite code
+        #[arg(long)]
         code: String,
     },
 }

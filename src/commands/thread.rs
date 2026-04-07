@@ -9,8 +9,10 @@ pub enum ThreadCommand {
     /// Create a new thread
     Create {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
         /// Thread name
+        #[arg(long)]
         name: String,
         /// Thread type: public or private
         #[arg(long, default_value = "public")]
@@ -19,26 +21,31 @@ pub enum ThreadCommand {
     /// Join a thread
     Join {
         /// Thread ID
+        #[arg(long)]
         id: String,
     },
     /// Leave a thread
     Leave {
         /// Thread ID
+        #[arg(long)]
         id: String,
     },
     /// List thread members
     Members {
         /// Thread ID
+        #[arg(long)]
         id: String,
     },
     /// List active threads in a guild
     ListActive {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
     },
     /// List archived threads in a channel
     ListArchived {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
         /// Archive type: public or private
         #[arg(long, default_value = "public")]

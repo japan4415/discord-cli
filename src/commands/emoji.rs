@@ -10,38 +10,49 @@ pub enum EmojiCommand {
     /// List all emojis in a guild
     List {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
     },
     /// Get a specific emoji
     Get {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
         /// Emoji ID
+        #[arg(long)]
         id: String,
     },
     /// Create a new emoji
     Create {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
         /// Emoji name
+        #[arg(long)]
         name: String,
         /// Path to image file
+        #[arg(long)]
         image_path: String,
     },
     /// Edit an emoji
     Edit {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
         /// Emoji ID
+        #[arg(long)]
         id: String,
         /// New name
+        #[arg(long)]
         name: String,
     },
     /// Delete an emoji
     Delete {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
         /// Emoji ID
+        #[arg(long)]
         id: String,
     },
 }

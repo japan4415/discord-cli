@@ -19,13 +19,22 @@ pub enum StickerCommand {
         #[arg(long)]
         id: String,
     },
-    /// Create a guild sticker (JSON params)
+    /// Create a guild sticker (requires file upload)
     Create {
         #[arg(long)]
         guild_id: String,
-        /// JSON data for sticker creation
+        /// Sticker name
         #[arg(long)]
-        json: String,
+        name: String,
+        /// Sticker description
+        #[arg(long)]
+        description: String,
+        /// Autocomplete/suggestion tags (comma separated)
+        #[arg(long)]
+        tags: String,
+        /// Path to the sticker image file
+        #[arg(long)]
+        file: String,
     },
     /// Edit a guild sticker
     Edit {
@@ -58,9 +67,22 @@ impl StickerCommand {
                 let s = sticker::get_guild_sticker(client, &guild_id, &id).await?;
                 output::render(output_format, &s)?;
             }
-            Self::Create { guild_id, json } => {
-                let params: serde_json::Value = serde_json::from_str(&json)?;
-                let s = sticker::create_guild_sticker(client, &guild_id, &params).await?;
+            Self::Create {
+                guild_id,
+                name,
+                description,
+                tags,
+                file,
+            } => {
+                let s = sticker::create_guild_sticker(
+                    client,
+                    &guild_id,
+                    &name,
+                    &description,
+                    &tags,
+                    &file,
+                )
+                .await?;
                 output::render(output_format, &s)?;
             }
             Self::Edit {

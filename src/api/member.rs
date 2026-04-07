@@ -26,8 +26,12 @@ impl DiscordClient {
         &self,
         guild_id: &str,
         query_str: &str,
+        limit: Option<u64>,
     ) -> Result<Vec<GuildMember>> {
-        let query = [("query", query_str)];
+        let mut query: Vec<(&str, String)> = vec![("query", query_str.to_string())];
+        if let Some(l) = limit {
+            query.push(("limit", l.to_string()));
+        }
         self.get_with_query(&format!("/guilds/{}/members/search", guild_id), &query)
             .await
     }

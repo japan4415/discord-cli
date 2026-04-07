@@ -65,14 +65,16 @@ impl BanCommand {
                 delete_message_seconds,
             } => {
                 let mut params = serde_json::Map::new();
-                if let Some(r) = reason {
-                    params.insert("reason".into(), serde_json::Value::String(r));
-                }
                 if let Some(s) = delete_message_seconds {
                     params.insert("delete_message_seconds".into(), serde_json::json!(s));
                 }
                 client
-                    .create_ban(&guild_id, &user_id, &serde_json::Value::Object(params))
+                    .create_ban(
+                        &guild_id,
+                        &user_id,
+                        &serde_json::Value::Object(params),
+                        reason.as_deref(),
+                    )
                     .await?;
                 println!("User {} banned from guild {}.", user_id, guild_id);
             }

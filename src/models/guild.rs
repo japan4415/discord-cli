@@ -1,9 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
-fn display_option<T: std::fmt::Display>(o: &Option<T>) -> String {
-    o.as_ref().map_or("-".to_string(), |v| v.to_string())
-}
+use super::common::display_option;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct Guild {

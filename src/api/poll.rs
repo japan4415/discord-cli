@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::client::DiscordClient;
-use crate::models::poll::{Poll, PollVotersResponse};
+use crate::models::poll::PollVotersResponse;
 
 pub async fn get_answer_voters(
     client: &DiscordClient,
@@ -31,11 +31,12 @@ pub async fn get_answer_voters(
     }
 }
 
+/// Expire (end) a poll. Returns the full Message object as JSON.
 pub async fn expire_poll(
     client: &DiscordClient,
     channel_id: &str,
     message_id: &str,
-) -> Result<Poll> {
+) -> Result<serde_json::Value> {
     client
         .post(
             &format!("/channels/{}/polls/{}/expire", channel_id, message_id),

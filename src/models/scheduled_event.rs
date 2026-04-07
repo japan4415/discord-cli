@@ -24,7 +24,9 @@ pub struct GuildScheduledEvent {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct EventUser {
-    pub user_id: String,
+    pub guild_scheduled_event_id: String,
+    #[tabled(skip)]
+    pub user: serde_json::Value,
     #[tabled(skip)]
     pub member: Option<serde_json::Value>,
 }

@@ -10,6 +10,7 @@ pub enum AuditLogCommand {
     /// Get audit log entries for a guild
     Get {
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
         /// Filter by user ID
         #[arg(long)]

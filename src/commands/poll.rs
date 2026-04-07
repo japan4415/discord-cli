@@ -56,8 +56,9 @@ impl PollCommand {
                 channel_id,
                 message_id,
             } => {
-                let p = poll::expire_poll(client, &channel_id, &message_id).await?;
-                output::render(output_format, &p)?;
+                let message = poll::expire_poll(client, &channel_id, &message_id).await?;
+                let output_str = serde_json::to_string_pretty(&message)?;
+                println!("{}", output_str);
             }
         }
         Ok(())

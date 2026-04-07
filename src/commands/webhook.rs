@@ -9,39 +9,49 @@ pub enum WebhookCommand {
     /// List webhooks for a channel
     List {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
     },
     /// Get a webhook by ID
     Get {
         /// Webhook ID
+        #[arg(long)]
         id: String,
     },
     /// Create a webhook
     Create {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
         /// Webhook name
+        #[arg(long)]
         name: String,
     },
     /// Edit a webhook
     Edit {
         /// Webhook ID
+        #[arg(long)]
         id: String,
         /// New name
+        #[arg(long)]
         name: String,
     },
     /// Delete a webhook
     Delete {
         /// Webhook ID
+        #[arg(long)]
         id: String,
     },
     /// Execute a webhook
     Execute {
         /// Webhook ID
+        #[arg(long)]
         id: String,
         /// Webhook token
+        #[arg(long)]
         token: String,
         /// Message content
+        #[arg(long)]
         content: String,
     },
 }

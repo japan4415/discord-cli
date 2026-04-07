@@ -26,6 +26,9 @@ pub enum MemberCommand {
         guild_id: String,
         #[arg(long)]
         query: String,
+        /// Maximum number of members to return (1-1000)
+        #[arg(long, default_value = "10")]
+        limit: u64,
     },
     /// Kick a member from a guild
     Kick {
@@ -56,8 +59,14 @@ impl MemberCommand {
                 let members = client.list_members(&guild_id, Some(limit)).await?;
                 output::render_list(output_format, &members)?;
             }
-            Self::Search { guild_id, query } => {
-                let members = client.search_members(&guild_id, &query).await?;
+            Self::Search {
+                guild_id,
+                query,
+                limit,
+            } => {
+                let members = client
+                    .search_members(&guild_id, &query, Some(limit))
+                    .await?;
                 output::render_list(output_format, &members)?;
             }
             Self::Kick { guild_id, user_id } => {

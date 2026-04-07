@@ -9,45 +9,58 @@ pub enum CommandCommand {
     /// List global application commands
     ListGlobal {
         /// Application ID
+        #[arg(long)]
         app_id: String,
     },
     /// List guild application commands
     ListGuild {
         /// Application ID
+        #[arg(long)]
         app_id: String,
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
     },
     /// Create a global application command
     CreateGlobal {
         /// Application ID
+        #[arg(long)]
         app_id: String,
         /// Command JSON definition
+        #[arg(long)]
         json: String,
     },
     /// Create a guild application command
     CreateGuild {
         /// Application ID
+        #[arg(long)]
         app_id: String,
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
         /// Command JSON definition
+        #[arg(long)]
         json: String,
     },
     /// Delete a global application command
     DeleteGlobal {
         /// Application ID
+        #[arg(long)]
         app_id: String,
         /// Command ID
+        #[arg(long)]
         id: String,
     },
     /// Delete a guild application command
     DeleteGuild {
         /// Application ID
+        #[arg(long)]
         app_id: String,
         /// Guild ID
+        #[arg(long)]
         guild_id: String,
         /// Command ID
+        #[arg(long)]
         id: String,
     },
 }

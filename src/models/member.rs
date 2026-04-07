@@ -1,11 +1,8 @@
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
+use super::common::display_option;
 use super::user::User;
-
-fn display_option<T: std::fmt::Display>(o: &Option<T>) -> String {
-    o.as_ref().map_or("-".to_string(), |v| v.to_string())
-}
 
 fn display_user(u: &Option<User>) -> String {
     u.as_ref()

@@ -18,9 +18,14 @@ impl DiscordClient {
         guild_id: &str,
         user_id: &str,
         params: &serde_json::Value,
+        reason: Option<&str>,
     ) -> Result<()> {
-        self.put_empty_with_body(&format!("/guilds/{}/bans/{}", guild_id, user_id), params)
-            .await
+        self.put_empty_with_reason(
+            &format!("/guilds/{}/bans/{}", guild_id, user_id),
+            params,
+            reason,
+        )
+        .await
     }
 
     pub async fn remove_ban(&self, guild_id: &str, user_id: &str) -> Result<()> {

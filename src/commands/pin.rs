@@ -9,20 +9,25 @@ pub enum PinCommand {
     /// List pinned messages in a channel
     List {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
     },
     /// Pin a message
     Add {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
         /// Message ID
+        #[arg(long)]
         message_id: String,
     },
     /// Unpin a message
     Remove {
         /// Channel ID
+        #[arg(long)]
         channel_id: String,
         /// Message ID
+        #[arg(long)]
         message_id: String,
     },
 }

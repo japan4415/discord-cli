@@ -1,5 +1,4 @@
 pub mod rate_limit;
-pub mod request;
 
 use anyhow::Result;
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE, USER_AGENT};
@@ -65,14 +64,22 @@ impl DiscordClient {
     }
 
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T> {
-        let response = self
-            .http
-            .get(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .send()
-            .await?;
+        loop {
+            let response = self
+                .http
+                .get(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .send()
+                .await?;
 
-        self.handle_response(response).await
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_response(response).await;
+        }
     }
 
     pub async fn get_with_query<T: DeserializeOwned, Q: Serialize + ?Sized>(
@@ -80,74 +87,172 @@ impl DiscordClient {
         path: &str,
         query: &Q,
     ) -> Result<T> {
-        let response = self
-            .http
-            .get(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .query(query)
-            .send()
-            .await?;
+        loop {
+            let response = self
+                .http
+                .get(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .query(query)
+                .send()
+                .await?;
 
-        self.handle_response(response).await
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_response(response).await;
+        }
     }
 
     pub async fn post<T: DeserializeOwned, B: Serialize>(&self, path: &str, body: &B) -> Result<T> {
-        let response = self
-            .http
-            .post(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .json(body)
-            .send()
-            .await?;
+        loop {
+            let response = self
+                .http
+                .post(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .json(body)
+                .send()
+                .await?;
 
-        self.handle_response(response).await
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_response(response).await;
+        }
     }
 
     #[allow(dead_code)]
     pub async fn post_empty(&self, path: &str) -> Result<()> {
-        let response = self
-            .http
-            .post(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .send()
-            .await?;
+        loop {
+            let response = self
+                .http
+                .post(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .send()
+                .await?;
 
-        self.handle_empty_response(response).await
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_empty_response(response).await;
+        }
     }
 
     pub async fn post_empty_with_body<B: Serialize>(&self, path: &str, body: &B) -> Result<()> {
+        loop {
+            let response = self
+                .http
+                .post(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .json(body)
+                .send()
+                .await?;
+
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_empty_response(response).await;
+        }
+    }
+
+    pub async fn post_multipart<T: DeserializeOwned>(
+        &self,
+        path: &str,
+        form: reqwest::multipart::Form,
+    ) -> Result<T> {
+        // multipart requests cannot be cloned/retried easily since Form is consumed,
+        // so we do not retry on rate limit here. The caller should handle retries if needed.
         let response = self
             .http
             .post(self.url(path))
             .header(AUTHORIZATION, self.auth_header())
-            .json(body)
-            .send()
-            .await?;
-
-        self.handle_empty_response(response).await
-    }
-
-    pub async fn put<T: DeserializeOwned, B: Serialize>(&self, path: &str, body: &B) -> Result<T> {
-        let response = self
-            .http
-            .put(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .json(body)
+            .multipart(form)
             .send()
             .await?;
 
         self.handle_response(response).await
     }
 
-    pub async fn put_empty(&self, path: &str) -> Result<()> {
-        let response = self
-            .http
-            .put(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .send()
-            .await?;
+    pub async fn put<T: DeserializeOwned, B: Serialize>(&self, path: &str, body: &B) -> Result<T> {
+        loop {
+            let response = self
+                .http
+                .put(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .json(body)
+                .send()
+                .await?;
 
-        self.handle_empty_response(response).await
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_response(response).await;
+        }
+    }
+
+    pub async fn put_empty(&self, path: &str) -> Result<()> {
+        loop {
+            let response = self
+                .http
+                .put(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .send()
+                .await?;
+
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_empty_response(response).await;
+        }
+    }
+
+    pub async fn put_empty_with_reason(
+        &self,
+        path: &str,
+        body: &serde_json::Value,
+        reason: Option<&str>,
+    ) -> Result<()> {
+        loop {
+            let mut req = self
+                .http
+                .put(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .json(body);
+
+            if let Some(reason) = reason {
+                req = req.header(
+                    "X-Audit-Log-Reason",
+                    urlencoding::encode(reason).into_owned(),
+                );
+            }
+
+            let response = req.send().await?;
+
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_empty_response(response).await;
+        }
     }
 
     pub async fn patch<T: DeserializeOwned, B: Serialize>(
@@ -155,46 +260,45 @@ impl DiscordClient {
         path: &str,
         body: &B,
     ) -> Result<T> {
-        let response = self
-            .http
-            .patch(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .json(body)
-            .send()
-            .await?;
+        loop {
+            let response = self
+                .http
+                .patch(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .json(body)
+                .send()
+                .await?;
 
-        self.handle_response(response).await
-    }
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
 
-    pub async fn put_empty_with_body<B: Serialize>(&self, path: &str, body: &B) -> Result<()> {
-        let response = self
-            .http
-            .put(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .json(body)
-            .send()
-            .await?;
-
-        self.handle_empty_response(response).await
+            return self.handle_response(response).await;
+        }
     }
 
     pub async fn delete(&self, path: &str) -> Result<()> {
-        let response = self
-            .http
-            .delete(self.url(path))
-            .header(AUTHORIZATION, self.auth_header())
-            .send()
-            .await?;
+        loop {
+            let response = self
+                .http
+                .delete(self.url(path))
+                .header(AUTHORIZATION, self.auth_header())
+                .send()
+                .await?;
 
-        self.handle_empty_response(response).await
+            if let Some(duration) = rate_limit::check_rate_limit(&response) {
+                tracing::warn!("Rate limited, retry after {:?}", duration);
+                tokio::time::sleep(duration).await;
+                continue;
+            }
+
+            return self.handle_empty_response(response).await;
+        }
     }
 
     async fn handle_response<T: DeserializeOwned>(&self, response: reqwest::Response) -> Result<T> {
-        if let Some(duration) = rate_limit::check_rate_limit(&response) {
-            tracing::warn!("Rate limited, retry after {:?}", duration);
-            tokio::time::sleep(duration).await;
-        }
-
         let status = response.status();
         if !status.is_success() {
             let body = response.text().await.unwrap_or_default();
@@ -210,11 +314,6 @@ impl DiscordClient {
     }
 
     async fn handle_empty_response(&self, response: reqwest::Response) -> Result<()> {
-        if let Some(duration) = rate_limit::check_rate_limit(&response) {
-            tracing::warn!("Rate limited, retry after {:?}", duration);
-            tokio::time::sleep(duration).await;
-        }
-
         let status = response.status();
         if !status.is_success() {
             let body = response.text().await.unwrap_or_default();
