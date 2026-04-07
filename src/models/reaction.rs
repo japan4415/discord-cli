@@ -6,9 +6,9 @@ use super::common::display_option;
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct Emoji {
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub name: Option<String>,
     #[tabled(skip)]
     #[serde(flatten)]

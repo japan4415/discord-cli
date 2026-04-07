@@ -12,12 +12,12 @@ fn display_author(u: &User) -> String {
 pub struct Message {
     pub id: String,
     pub channel_id: String,
-    #[tabled(display_with = "display_author")]
+    #[tabled(display = "display_author")]
     pub author: User,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub content: Option<String>,
     pub timestamp: String,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub edited_timestamp: Option<String>,
     #[tabled(skip)]
     #[serde(flatten)]

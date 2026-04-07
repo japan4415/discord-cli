@@ -8,16 +8,16 @@ pub struct Webhook {
     pub id: String,
     #[serde(rename = "type")]
     pub webhook_type: u8,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub guild_id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub channel_id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub name: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub avatar: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub token: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub url: Option<String>,
 }

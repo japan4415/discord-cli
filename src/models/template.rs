@@ -7,12 +7,12 @@ use super::common::display_option;
 pub struct GuildTemplate {
     pub code: String,
     pub name: String,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub description: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub usage_count: Option<u64>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub creator_id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub source_guild_id: Option<String>,
 }

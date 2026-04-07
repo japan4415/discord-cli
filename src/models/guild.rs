@@ -9,11 +9,11 @@ pub struct Guild {
     pub name: String,
     #[tabled(skip)]
     pub icon: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub owner_id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub member_count: Option<u64>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub description: Option<String>,
     #[tabled(skip)]
     #[serde(flatten)]

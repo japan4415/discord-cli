@@ -19,13 +19,13 @@ fn display_roles(roles: &[String]) -> String {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct GuildMember {
-    #[tabled(display_with = "display_user")]
+    #[tabled(display = "display_user")]
     pub user: Option<User>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub nick: Option<String>,
-    #[tabled(display_with = "display_roles")]
+    #[tabled(display = "display_roles")]
     pub roles: Vec<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub joined_at: Option<String>,
     #[tabled(skip)]
     #[serde(flatten)]
