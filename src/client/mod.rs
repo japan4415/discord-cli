@@ -63,6 +63,38 @@ impl DiscordClient {
         format!("{}{}", self.base_url, path)
     }
 
+    /// Handle rate limit check and retry logic.
+    ///
+    /// Returns `Ok(Some(response))` if not rate-limited,
+    /// `Ok(None)` after sleeping if rate-limited (caller should retry),
+    /// or `Err` if max retries exceeded.
+    async fn wait_for_rate_limit(
+        &self,
+        response: reqwest::Response,
+        retry_count: &mut u32,
+    ) -> Result<Option<reqwest::Response>> {
+        match rate_limit::check_rate_limit(response).await {
+            rate_limit::RateLimitResult::Ok(response) => Ok(Some(response)),
+            rate_limit::RateLimitResult::RetryAfter(duration) => {
+                *retry_count += 1;
+                if *retry_count >= rate_limit::MAX_RETRIES {
+                    anyhow::bail!(
+                        "Rate limit exceeded after {} retries",
+                        rate_limit::MAX_RETRIES
+                    );
+                }
+                tracing::warn!(
+                    "Rate limited, retry after {:?} (attempt {}/{})",
+                    duration,
+                    retry_count,
+                    rate_limit::MAX_RETRIES
+                );
+                tokio::time::sleep(duration).await;
+                Ok(None)
+            }
+        }
+    }
+
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T> {
         let mut retry_count = 0u32;
         loop {
@@ -73,26 +105,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_response(response).await;
             }
         }
     }
@@ -112,26 +126,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_response(response).await;
             }
         }
     }
@@ -147,26 +143,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_response(response).await;
             }
         }
     }
@@ -182,26 +160,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_empty_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_empty_response(response).await;
             }
         }
     }
@@ -217,26 +177,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_empty_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_empty_response(response).await;
             }
         }
     }
@@ -270,26 +212,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_response(response).await;
             }
         }
     }
@@ -304,26 +228,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_empty_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_empty_response(response).await;
             }
         }
     }
@@ -351,26 +257,8 @@ impl DiscordClient {
 
             let response = req.send().await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_empty_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_empty_response(response).await;
             }
         }
     }
@@ -390,26 +278,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_response(response).await;
             }
         }
     }
@@ -424,26 +294,8 @@ impl DiscordClient {
                 .send()
                 .await?;
 
-            match rate_limit::check_rate_limit(response).await {
-                rate_limit::RateLimitResult::Ok(response) => {
-                    return self.handle_empty_response(response).await;
-                }
-                rate_limit::RateLimitResult::RetryAfter(duration) => {
-                    retry_count += 1;
-                    if retry_count > rate_limit::MAX_RETRIES {
-                        anyhow::bail!(
-                            "Rate limit exceeded after {} retries",
-                            rate_limit::MAX_RETRIES
-                        );
-                    }
-                    tracing::warn!(
-                        "Rate limited, retry after {:?} (attempt {}/{})",
-                        duration,
-                        retry_count,
-                        rate_limit::MAX_RETRIES
-                    );
-                    tokio::time::sleep(duration).await;
-                }
+            if let Some(response) = self.wait_for_rate_limit(response, &mut retry_count).await? {
+                return self.handle_empty_response(response).await;
             }
         }
     }
