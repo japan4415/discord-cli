@@ -7,14 +7,14 @@ use super::common::display_option;
 pub struct SoundboardSound {
     pub sound_id: String,
     pub name: String,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub volume: Option<f64>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub emoji_id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub emoji_name: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub guild_id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub available: Option<bool>,
 }

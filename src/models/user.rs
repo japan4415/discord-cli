@@ -7,13 +7,13 @@ use super::common::display_option;
 pub struct User {
     pub id: String,
     pub username: String,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub discriminator: Option<String>,
     #[tabled(skip)]
     pub avatar: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub bot: Option<bool>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub global_name: Option<String>,
     #[tabled(skip)]
     #[serde(flatten)]

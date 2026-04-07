@@ -9,6 +9,6 @@ pub struct StageInstance {
     pub guild_id: String,
     pub channel_id: String,
     pub topic: String,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub privacy_level: Option<u8>,
 }

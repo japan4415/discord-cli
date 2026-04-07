@@ -10,9 +10,9 @@ fn display_user(u: &User) -> String {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct Ban {
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub reason: Option<String>,
-    #[tabled(display_with = "display_user")]
+    #[tabled(display = "display_user")]
     pub user: User,
 }
 

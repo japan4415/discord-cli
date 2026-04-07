@@ -12,16 +12,16 @@ pub struct Invite {
     pub channel: Option<serde_json::Value>,
     #[tabled(skip)]
     pub inviter: Option<serde_json::Value>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub uses: Option<u64>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub max_uses: Option<u64>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub max_age: Option<u64>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub temporary: Option<bool>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub created_at: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub expires_at: Option<String>,
 }

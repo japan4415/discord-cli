@@ -10,9 +10,9 @@ pub struct ApplicationCommand {
     pub name: String,
     pub description: String,
     #[serde(rename = "type")]
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub command_type: Option<u8>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub guild_id: Option<String>,
     #[tabled(skip)]
     pub options: Option<Vec<serde_json::Value>>,

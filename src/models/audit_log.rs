@@ -17,11 +17,11 @@ pub struct AuditLog {
 #[derive(Debug, Clone, Serialize, Deserialize, Tabled)]
 pub struct AuditLogEntry {
     pub id: String,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub target_id: Option<String>,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub user_id: Option<String>,
     pub action_type: u64,
-    #[tabled(display_with = "display_option")]
+    #[tabled(display = "display_option")]
     pub reason: Option<String>,
 }
