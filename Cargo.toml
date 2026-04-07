@@ -1,6 +1,6 @@
 [package]
 name = "discord-cli"
-version = "0.1.0"
+version = "1.0.1"
 edition = "2021"
 description = "A comprehensive Discord REST API CLI tool"
 authors = ["Yoshihiko Kato"]
