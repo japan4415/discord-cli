@@ -23,7 +23,7 @@ tabled = { version = "0.21", default-features = false, features = ["derive"] }
 dotenvy = "0.15"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-base64 = "0.22"
+base64 = "0.23"
 chrono = { version = "0.4", features = ["serde"] }
 urlencoding = "2.1.3"
 
